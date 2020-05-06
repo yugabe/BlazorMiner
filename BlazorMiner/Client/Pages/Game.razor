@@ -1,0 +1,147 @@
+﻿@page "/game/{gameId}"
+@attribute [Authorize]
+
+<h1>BlazorMiner</h1>
+
+@if (!_loaded)
+{
+    <text><h3>Just a moment...</h3></text>
+}
+else if (_state != null)
+{
+    if (_state.TurnEnds != null)
+    {
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-3">
+                    <h2>@Room.Name</h2>
+
+                    @foreach (var user in _state.Users)
+                    {
+                        <p @key="user.Id" class="@(_state.CurrentUserId == user.Id? "text-active font-weight-bold border border-success" : "border-info") @(_userId == _state.CurrentUserId ? "bg-success" : null)">@user.Name (@user.Points pts)</p>
+                    }
+                    <br />
+                </div>
+                <div class="col-sm-9 text-center">
+                    @for (var y = 1; y <= _state.Size; y++)
+                    {
+                        <div class="d-flex w-100 justify-content-between">
+                            @for (var x = 1; x <= _state.Size; x++)
+                            {
+                                var value = _state.Map[(y - 1) * _state.Size + (x - 1)];
+                                var (xIn, yIn) = (x, y);
+                                var sizeInPercent = (int)((double)100 / _state.Size);
+                                <div style="display:inline-block; width: @sizeInPercent%; height: @(0.66 * sizeInPercent)vh; line-height: @(0.66 * sizeInPercent)vh;
+                                 @(_state.CurrentUserId == _userId && value == null ? "cursor: pointer" : null)
+                                 "
+                                     @onclick="() => MakeMoveAsync(xIn, yIn)"
+                                     class="border @(value == null ? "border-info" : value == -1 ? "bg-success" : value == 0 ? "bg-dark" : "bg-primary")"
+                                     disabled="@(_state.CurrentUserId != _userId || value != null)">
+                                    @if (value > 0)
+                                    {
+                                        <text>@value</text>
+                                    }
+                                    else if (value == -1)
+                                    {
+                                        <i class="oi oi-dollar"></i>
+                                    }
+                                    else
+                                    {
+                                        <text>&nbsp;</text>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                    @if (_turnEndsIn != null)
+                    {
+                        <div class="progress">
+                            <div class="progress-bar @(_userId == _state.CurrentUserId ? "bg-success" : null)" style="width: @($"{Math.Min(100, _turnEndsIn.Value.TotalMilliseconds / 50)}%")">@((int)_turnEndsIn.Value.TotalSeconds)</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            @foreach (var (user, index) in _state.Users.OrderByDescending(u => u.Points).Select((u, i) => (u, i)))
+            {
+                if (index == 0)
+                {
+                    <h4 class="p-3 text-success border border-dark">#1: <b>@user.Name</b> <small>(@user.Points pts)</small></h4>
+                }
+                else
+                {
+                    <p class="p-3 text-muted bg-light @(_userId == user.Id ? "border border-info" : null)">#@(index + 1): <b>@user.Name</b> <small>(@user.Points pts)</small></p>
+                }
+
+            }
+        </div>
+    }
+}
+else if (Room?.Users != null)
+{
+    <h3>Hi guys!</h3>
+    <ul>
+        @foreach (var user in Room.Users)
+        {
+            <li>@user.Name</li>
+        }
+    </ul>
+    <h5>Can we start?</h5>
+    <button class="btn btn-outline-success" @onclick="StartAsync">Yes!</button>
+}
+
+@code {
+    [Inject] MinerClient MinerClient { get; set; }
+    [Inject] NavigationManager NavigationManager { get; set; }
+    [Parameter] public string GameId { set => _gameId = Guid.TryParse(value, out var result) ? result : default; }
+    Guid _gameId;
+
+    int MaxPoints => _state.Users.Max(p => p.Points);
+    GameState _state;
+    TimeSpan? _turnEndsIn;
+    string _userId;
+    bool _loaded = false;
+
+    Room Room => MinerClient?.Rooms?.FirstOrDefault(r => r.Id == _gameId);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _userId = await MinerClient.InvokeAsync(h => h.GetUserIdAsync());
+        MinerClient.StateHasChanged += StateHasChanged;
+        MinerClient.GameStateChanged += (newState, turnEndsIn) =>
+        {
+            if (newState.GameId == _gameId)
+            {
+                _state = newState;
+                _turnEndsIn = turnEndsIn;
+                StateHasChanged();
+            }
+        };
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await MinerClient.InvokeAsync(h => h.UpdateRoomsAsync());
+        if (Room == null)
+            NavigationManager.NavigateTo("/");
+        else
+        {
+            await MinerClient.InvokeAsync(h => h.UpdateGameStateAsync(_gameId));
+            _loaded = true;
+        }
+    }
+
+    async Task StartAsync()
+    {
+        await MinerClient.InvokeAsync(h => h.StartGameAsync(_gameId));
+    }
+
+    async Task MakeMoveAsync(int x, int y)
+    {
+        await MinerClient.InvokeAsync(h => h.MakeMoveAsync(_gameId, x, y));
+    }
+}

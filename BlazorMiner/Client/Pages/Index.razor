@@ -1,0 +1,212 @@
+﻿@page "/"
+@attribute [Authorize]
+
+<h1>BlazorMiner</h1>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h2>Lobby</h2>
+            <div class="list-group">
+                <div class="list-group-item bg-primary active">
+                    <h3>Create your room</h3>
+                    <form @onsubmit="CreateRoomAsync">
+                        <input class="form-control"
+                               @bind="NewRoomName"
+                               @bind:event="oninput"
+                               disabled="@(_creatingRoom || !MinerClient.IsConnected)"
+                               placeholder="Give a fun name for your room" />
+                        <input class="form-control"
+                               @bind="NewRoomPin"
+                               @bind:event="oninput"
+                               disabled="@(_creatingRoom || !MinerClient.IsConnected)"
+                               placeholder="Enter the 4 digit PIN for the room" />
+
+                        <button class="btn btn-secondary" type="submit" disabled="@(!RoomPinValidator.IsValidPin(NewRoomPin) || string.IsNullOrWhiteSpace(NewRoomName) || !MinerClient.IsConnected)">Create room</button>
+                    </form>
+                </div>
+                <h3>Available rooms</h3>
+                <div class="list-group-item bg-light">
+                    @if (MinerClient.Rooms.Any())
+                    {
+                        foreach (var room in MinerClient.Rooms)
+                        {
+                            <div class="list-group-item" @key="room.Id">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <p class="mb-1 @(room.Started ? "text-dark" : null)">
+                                        @room.Name
+                                        @if (room.Users.Any(u => u.Id == _userId))
+                                        {
+                                            <a href="/game/@room.Id"><i class="oi oi-arrow-right"></i></a>
+                                        }
+                                    </p>
+                                    <small class="font-weight-bold">@room.Host.Name</small>
+                                    <small class="text-muted">@room.Date.ToString("HH:MM:ss")</small>
+                                </div>
+                                <div>
+                                    Players:
+                                    @foreach (var (user, index) in room.Users.Select((u, i) => (u, i)))
+                                    {
+                                        <i>@user.Name</i>
+                                        @if (index != room.Users.Count - 1)
+                                        {<text>, </text>}
+                                    }
+                                </div>
+                                @if (_selectedRoom == room)
+                                {
+                                    <form @onsubmit="() => EnterRoomAsync(room)">
+                                        <input class="form-control"
+                                               @bind="EnterRoomPin"
+                                               @bind:event="oninput"
+                                               disabled="@(_enteringRoom || !MinerClient.IsConnected)"
+                                               placeholder="Enter the 4 digit PIN for the room to enter" />
+                                        <button class="btn btn-secondary" type="submit" disabled="@(!RoomPinValidator.IsValidPin(EnterRoomPin) || _enteringRoom || !MinerClient.IsConnected)">Enter room</button>
+                                        @if (_enterRoomError != null)
+                                        {
+                                            <p class="text-danger small">@_enterRoomError <b style="cursor: pointer" @onclick="() => _enterRoomError = null">X</b></p>
+                                        }
+                                    </form>
+                                }
+                                else if (!room.Started && room.Users.All(u => u.Id != _userId))
+                                {
+                                    <a class="btn btn-success" @onclick="() => { _selectedRoom = room; _enterRoomError = null; }">Enter room</a>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <h3>No rooms yet :'(</h3>
+                        <p>Create one above!</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <h2>Lobby chat</h2>
+            <div class="list-group">
+                <div class="list-group-item bg-primary active">
+                    <form @onsubmit="SendChatMessageAsync">
+                        <input @ref="ChatInput"
+                               class="form-control"
+                               @bind="_chatMessage"
+                               disabled="@(_chatMessageSending || !MinerClient.IsConnected)"
+                               placeholder="Type here to chat..." />
+                        <button type="submit" style="display: none"></button>
+                    </form>
+                </div>
+                @foreach (var item in MinerClient.LobbyMessages)
+                {
+                    <a class="list-group-item" @key="item">
+                        <p class="mb-1">@item.Text</p>
+                        <div class="d-flex w-100 justify-content-between">
+                            <small class="font-weight-bold">@item.User</small>
+                            <small class="text-muted">@item.Date.ToString("HH:MM:ss")</small>
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@implements IDisposable
+@code {
+    [Inject] MinerClient MinerClient { get; set; }
+    [Inject] IJSRuntime JSRuntime { get; set; }
+    ElementReference ChatInput { get; set; }
+    bool _chatMessageSending = false;
+    string _chatMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        MinerClient.StateHasChanged += StateHasChanged;
+        await MinerClient.InvokeAsync(h => h.UpdateRoomsAsync());
+        _userId = await MinerClient.InvokeAsync(h => h.GetUserIdAsync());
+    }
+
+    public void Dispose()
+    {
+        MinerClient.StateHasChanged -= StateHasChanged;
+    }
+
+    async Task SendChatMessageAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_chatMessage) || _chatMessageSending || !MinerClient.IsConnected)
+            return;
+
+        _chatMessageSending = true;
+        await MinerClient.InvokeAsync(h => h.SendMessageToLobbyAsync(_chatMessage));
+        _chatMessageSending = false;
+        _chatMessage = "";
+        StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("focus", ChatInput);
+    }
+
+
+    [Inject] RoomPinValidator RoomPinValidator { get; set; }
+
+    string _userId;
+    string NewRoomName { get; set; }
+
+    string _newRoomPin;
+    string NewRoomPin
+    {
+        get => _newRoomPin;
+        set => _newRoomPin = (value == null || (value.Length <= 4 && value.All(c => int.TryParse(c.ToString(), out _)))) ? value : _newRoomPin;
+    }
+
+    bool _creatingRoom = false;
+
+    [Inject] NavigationManager NavigationManager { get; set; }
+
+    async Task CreateRoomAsync()
+    {
+        if (!RoomPinValidator.IsValidPin(NewRoomPin) || string.IsNullOrWhiteSpace(NewRoomName) || !MinerClient.IsConnected)
+            return;
+
+        _creatingRoom = true;
+        try
+        {
+            var room = await MinerClient.InvokeAsync(h => h.CreateRoomAsync(NewRoomPin, NewRoomName));
+            NavigationManager.NavigateTo($"/game/{room.Id}");
+        }
+        finally
+        {
+            _creatingRoom = false;
+        }
+    }
+
+    bool _enteringRoom = false;
+    Room _selectedRoom;
+
+    string _enterRoomPin;
+    string EnterRoomPin
+    {
+        get => _enterRoomPin;
+        set => _enterRoomPin = (value == null || (value.Length <= 4 && value.All(c => int.TryParse(c.ToString(), out _)))) ? value : _enterRoomPin;
+    }
+
+    string _enterRoomError;
+
+    async Task EnterRoomAsync(Room room)
+    {
+        if (room == null || !RoomPinValidator.IsValidPin(EnterRoomPin) || _enteringRoom || !MinerClient.IsConnected)
+            return;
+
+        _enteringRoom = true;
+        var result = await MinerClient.InvokeAsync(h => h.EnterRoomAsync(room.Id, EnterRoomPin));
+        _enterRoomError = result switch
+        {
+            EnterRoomResult.InvalidRoomId => "Invalid room ID.",
+            EnterRoomResult.InvalidPin => "Invalid PIN.",
+            EnterRoomResult.GameAlreadyInProgress => "The game is already in progress",
+            _ => null
+        };
+        if (result == EnterRoomResult.UserAlreadyInRoom || result == EnterRoomResult.Ok)
+            NavigationManager.NavigateTo($"/game/{room.Id}");
+
+        _enteringRoom = false;
+        _enterRoomPin = "";
+    }
+}

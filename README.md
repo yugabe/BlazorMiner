@@ -378,7 +378,7 @@ function focus(element) {
                         <p class="mb-1">@item.Text</p>
                         <div class="d-flex w-100 justify-content-between">
                             <small class="font-weight-bold">@item.User</small>
-                            <small class="text-muted">@item.Date.ToString("HH:MM:ss")</small>
+                            <small class="text-muted">@item.Date.ToString("hh:MM:ss")</small>
                         </div>
                     </a>
                 }
@@ -655,7 +655,7 @@ Task<string> GetUserIdAsync();
                             }
                         </p>
                         <small class="font-weight-bold">@room.Host.Name</small>
-                        <small class="text-muted">@room.Date.ToString("HH:MM:ss")</small>
+                        <small class="text-muted">@room.Date.ToString("hh:MM:ss")</small>
                     </div>
                     <div>
                         Players:

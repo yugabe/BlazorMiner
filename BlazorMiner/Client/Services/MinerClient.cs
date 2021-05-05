@@ -1,5 +1,4 @@
-﻿using BlazorMiner.Client.Pages;
-using BlazorMiner.Shared;
+﻿using BlazorMiner.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Http.Connections;
@@ -63,7 +62,7 @@ namespace BlazorMiner.Client.Services
 
         public IEnumerable<Message> LobbyMessages => _lobbyMessages;
 
-        private readonly LinkedList<Message> _lobbyMessages = new LinkedList<Message>();
+        private readonly LinkedList<Message> _lobbyMessages = new();
 
         public Task RecieveLobbyMessageAsync(Message message)
         {
@@ -86,7 +85,7 @@ namespace BlazorMiner.Client.Services
         public event Action<GameState, TimeSpan?> GameStateChanged;
         public Task UpdateGameStateAsync(GameState gameState, double? turnEndsInMilliseconds)
         {
-            GameStateChanged?.Invoke(gameState, turnEndsInMilliseconds == null ? (TimeSpan?)null : TimeSpan.FromMilliseconds(turnEndsInMilliseconds.Value));
+            GameStateChanged?.Invoke(gameState, turnEndsInMilliseconds == null ? null : TimeSpan.FromMilliseconds(turnEndsInMilliseconds.Value));
             return Task.CompletedTask;
         }
     }

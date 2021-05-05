@@ -31,7 +31,7 @@ else if (_state != null)
                                 var value = _state.Map[(y - 1) * _state.Size + (x - 1)];
                                 var (xIn, yIn) = (x, y);
                                 var sizeInPercent = (int)((double)100 / _state.Size);
-                                <div style="display:inline-block; width: @sizeInPercent%; height: @(0.66 * sizeInPercent)vh; line-height: @(0.66 * sizeInPercent)vh;
+                                <div style="display:inline-block; width: @($"{sizeInPercent}%"); height: @($"{0.66 * sizeInPercent}vh"); line-height: @($"{0.66 * sizeInPercent}vh");
                                  @(_state.CurrentUserId == _userId && value == null ? "cursor: pointer" : null)
                                  "
                                      @onclick="() => MakeMoveAsync(xIn, yIn)"

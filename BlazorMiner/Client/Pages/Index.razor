@@ -90,6 +90,7 @@
                         <input @ref="ChatInput"
                                class="form-control"
                                @bind="_chatMessage"
+                               autofocus
                                disabled="@(_chatMessageSending || !MinerClient.IsConnected)"
                                placeholder="Type here to chat..." />
                         <button type="submit" style="display: none"></button>

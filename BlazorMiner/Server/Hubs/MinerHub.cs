@@ -114,14 +114,14 @@ namespace BlazorMiner.Server.Hubs
                 await Clients.Users(item.Room.Users.Select(u => u.Id).ToList()).UpdateGameStateAsync(game.state, game.state.TurnEnds.HasValue ? (game.state.TurnEnds.Value - DateTime.Now).TotalMilliseconds : (double?)null);
         }
 
-        private IEnumerable<(int x, int y)> GetNeighbors(Dictionary<(int x, int y), int> map, int x, int y) =>
+        private static IEnumerable<(int x, int y)> GetNeighbors(Dictionary<(int x, int y), int> map, int x, int y) =>
             new[] {
                 (x - 1, y - 1), (x, y - 1), (x + 1, y - 1),
                 (x - 1, y), (x + 1, y),
                 (x - 1, y + 1), (x, y + 1), (x + 1, y + 1)
             }.Where(map.ContainsKey);
 
-        private void NextPlayer(GameState state)
+        private static void NextPlayer(GameState state)
         {
             state.CurrentUserId = state.Users[(state.Users.FindIndex(u => u.Id == state.CurrentUserId) + 1) % state.Users.Count].Id;
             state.TurnEnds = DateTime.Now.AddSeconds(5);
@@ -173,7 +173,7 @@ namespace BlazorMiner.Server.Hubs
             await UpdateGameStateAsync(roomId);
         }
 
-        private int GetCoordinate(int x, int y, int size) => size * (y - 1) + (x - 1);
+        private static int GetCoordinate(int x, int y, int size) => size * (y - 1) + (x - 1);
 
         public async Task MakeMoveAsync(Guid roomId, int x, int y)
         {

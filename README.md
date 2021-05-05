@@ -4,7 +4,9 @@
 
 The project in its completed state is a real-time game that uses [ASP.NET Core](https://docs.microsoft.com/aspnet/core/introduction-to-aspnet-core) frameworks [Blazor WebAssembly](https://docs.microsoft.com/aspnet/core/blazor), [Web API](https://docs.microsoft.com/aspnet/core/web-api), [Identity](https://docs.microsoft.com/aspnet/core/security/authentication), [SignalR](https://docs.microsoft.com/aspnet/core/signalr/introduction) and [Entity Framework Core](https://docs.microsoft.com/ef/core/). All used software are free to use, and all code written is based on open source software mainly made available by Microsoft.
 
-The goal of this project is to get an "in-depth, deep-dive overview" of the above frameworks, primarily intended for people who are at least a little familiar with the .NET ecosystem. Unless high demand requires it, not much explanation will be added to the steps required, as the primary documentation by Microsoft is the best place to learn these technologies. This project focuses on dipping your toes into each of these technologies, focusing on the latest and greatest of them all, [Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor). At the time of writing, Blazor WebAssembly is in public preview for ASP.NET Core 3.1 (version 3.2.0-rc1.20223.4) with the production ready version coming in the following weeks. The project can be completed at a steady pace in about <b>90-120 minutes</b>. Obviously, the project is not a production ready application, has bugs, anomalies and is rough around the edges, but feel free to [view the current issues](https://github.com/yugabe/BlazorMiner/issues), [open a new issue](https://github.com/yugabe/BlazorMiner/issues/new), fork or send me a pull request if you so desire, as any community interaction is most welcome.
+**UPDATE 2021 May:** I have tested this project and there are virtually no breaking changes! The transition from 3.1-rc1 to 5.0 was as painless as possible. I didn't update the whole doc below, as the minor differences are pretty straightforward, but the bigger ones I'm going to state explicitly though.
+
+The goal of this project is to get an "in-depth, deep-dive overview" of the above frameworks, primarily intended for people who are at least a little familiar with the .NET ecosystem. Unless high demand requires it, not much explanation will be added to the steps required, as the primary documentation by Microsoft is the best place to learn these technologies. This project focuses on dipping your toes into each of these technologies, focusing on the latest and greatest of them all, [Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor). At the time of writing, Blazor WebAssembly is ~~in public preview for ASP.NET Core 3.1 (version 3.2.0-rc1.20223.4) with the production ready version coming in the following weeks~~ *in **blazing** 🔥 production* with the current (tested) version being 5.0.4 (of the NuGet package `Microsoft.AspNetCore.Components.WebAssembly`). The project can be completed at a steady pace in about <b>90-120 minutes</b>. Obviously, the project is not a production ready application, has bugs, anomalies and is rough around the edges, but feel free to [view the current issues](https://github.com/yugabe/BlazorMiner/issues), [open a new issue](https://github.com/yugabe/BlazorMiner/issues/new), fork or send me a pull request if you so desire, as any community interaction is most welcome.
 
 Please, <b>don't forget to Star</b> this repository if you enjoyed its contents or themes; it's free to do so!
 
@@ -26,20 +28,20 @@ This is a step-by-step tutorial to complete this project. The repository contain
    - .NET Core SDK version 3.1.201 or above [(free download)](https://dotnet.microsoft.com/download/dotnet-core/3.1),
    - a popular evergreen browser, the new Microsoft Edge is highly recommended [(free download)](https://www.microsoft.com/edge).
 
-2. Install the Blazor WebAssembly template.
+2. ~~Install the Blazor WebAssembly template.~~ Note: you don't need to install the template as of .NET 5.
 
-Run the following command in a PowerShell window:
+~~Run the following command in a PowerShell window:~~
 
 ``` PowerShell
-dotnet new -i Microsoft.AspNetCore.Components.WebAssembly.Templates::3.2.0-rc1.20223.4
+#dotnet new -i Microsoft.AspNetCore.Components.WebAssembly.Templates::3.2.0-rc1.20223.4
 ```
 
-If you had Visual Studio running, close it after installing the template.
+~~If you had Visual Studio running, close it after installing the template.~~
 
 3. Open Visual Studio and Create a new Blazor WebAssembly project with the following settings and steps:
    - Choose "Create a new project" in the startup window.
      ![Create a new project](assets/step-3-1.png)
-   - Search for "blazor" in the search box and choose the "Blazor App" application type.
+   - Search for "blazor" in the search box and choose the "Blazor App" application type. *Note*: since .NET 5, you need to choose Blazor WebAssembly as the project type. The UI is a bit different, but the settings are essentially the same.
      ![New Blazor App application](assets/step-3-2.png)
    - Name the project and solution both "BlazorMiner", uncheck "Place solution and project in the same directory", and select the location in your PC you would like to work in.
      ![Name your project](assets/step-3-3.png)
@@ -293,7 +295,7 @@ namespace BlazorMiner.Client.Services
 
         public IEnumerable<Message> LobbyMessages => _lobbyMessages;
 
-        private readonly LinkedList<Message> _lobbyMessages = new LinkedList<Message>();
+        private readonly LinkedList<Message> _lobbyMessages = new();
 
         public Task RecieveLobbyMessageAsync(Message message)
         {
@@ -380,7 +382,7 @@ function focus(element) {
                         <p class="mb-1">@item.Text</p>
                         <div class="d-flex w-100 justify-content-between">
                             <small class="font-weight-bold">@item.User</small>
-                            <small class="text-muted">@item.Date.ToString("hh:mm:ss")</small>
+                            <small class="text-muted">@item.Date.ToString("HH:mm:ss")</small>
                         </div>
                     </a>
                 }
@@ -657,7 +659,7 @@ Task<string> GetUserIdAsync();
                             }
                         </p>
                         <small class="font-weight-bold">@room.Host.Name</small>
-                        <small class="text-muted">@room.Date.ToString("hh:mm:ss")</small>
+                        <small class="text-muted">@room.Date.ToString("HH:mm:ss")</small>
                     </div>
                     <div>
                         Players:
@@ -826,7 +828,7 @@ Task UpdateGameStateAsync(GameState gameState, double? turnEndsInMilliseconds);
 public event Action<GameState, TimeSpan?> GameStateChanged;
 public Task UpdateGameStateAsync(GameState gameState, double? turnEndsInMilliseconds)
 {
-    GameStateChanged?.Invoke(gameState, turnEndsInMilliseconds == null ? (TimeSpan?)null : TimeSpan.FromMilliseconds(turnEndsInMilliseconds.Value));
+    GameStateChanged?.Invoke(gameState, turnEndsInMilliseconds == null ? null : TimeSpan.FromMilliseconds(turnEndsInMilliseconds.Value));
     return Task.CompletedTask;
 }
 ```
@@ -1076,6 +1078,7 @@ else if (Room?.Users != null)
     <button class="btn btn-outline-success" @onclick="StartAsync">Yes!</button>
 }
 
+@implements IDisposable
 @code {
     [Inject] MinerClient MinerClient { get; set; }
     [Inject] NavigationManager NavigationManager { get; set; }
@@ -1103,6 +1106,11 @@ else if (Room?.Users != null)
                 StateHasChanged();
             }
         };
+    }
+
+    public void Dispose()
+    {
+        MinerClient.StateHasChanged -= StateHasChanged;
     }
 
     protected override async Task OnParametersSetAsync()
@@ -1144,4 +1152,4 @@ I hope you liked this tutorial as much as I liked writing it. I am seriously imp
 
 Please, don't forget to Star this repository if you enjoyed its contents or themes. Thank you for reading! 
 
-<b>Keep on Blazin'!</b>
+<b>🔥🔥🔥 Keep on Blazin'! 🔥🔥🔥</b>

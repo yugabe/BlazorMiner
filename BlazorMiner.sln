@@ -1,20 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.30011.22
+VisualStudioVersion = 16.0.31220.234
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorMiner.Server", "BlazorMiner\Server\BlazorMiner.Server.csproj", "{6CE4F409-8CB9-4FCB-8942-2EF791F8E1F7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorMiner.Server", "BlazorMiner\Server\BlazorMiner.Server.csproj", "{D2103A9F-616A-4691-AFDF-61D4935F36B7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorMiner.Client", "BlazorMiner\Client\BlazorMiner.Client.csproj", "{7AAB484D-E293-4018-B0EB-20C48D0D16A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorMiner.Client", "BlazorMiner\Client\BlazorMiner.Client.csproj", "{74B7B1E2-D1B9-4966-8795-AB83CF63875D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorMiner.Shared", "BlazorMiner\Shared\BlazorMiner.Shared.csproj", "{610B5705-C722-4A4E-8006-30249F71CF9B}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DB77B234-5D01-4451-A712-B86CBD1B649A}"
-	ProjectSection(SolutionItems) = preProject
-		.gitignore = .gitignore
-		LICENSE = LICENSE
-		README.md = README.md
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorMiner.Shared", "BlazorMiner\Shared\BlazorMiner.Shared.csproj", "{D10530DE-14DD-4EAD-8EF1-D80B50899CC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,23 +15,23 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6CE4F409-8CB9-4FCB-8942-2EF791F8E1F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6CE4F409-8CB9-4FCB-8942-2EF791F8E1F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6CE4F409-8CB9-4FCB-8942-2EF791F8E1F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6CE4F409-8CB9-4FCB-8942-2EF791F8E1F7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7AAB484D-E293-4018-B0EB-20C48D0D16A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7AAB484D-E293-4018-B0EB-20C48D0D16A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7AAB484D-E293-4018-B0EB-20C48D0D16A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7AAB484D-E293-4018-B0EB-20C48D0D16A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{610B5705-C722-4A4E-8006-30249F71CF9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{610B5705-C722-4A4E-8006-30249F71CF9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{610B5705-C722-4A4E-8006-30249F71CF9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{610B5705-C722-4A4E-8006-30249F71CF9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2103A9F-616A-4691-AFDF-61D4935F36B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2103A9F-616A-4691-AFDF-61D4935F36B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2103A9F-616A-4691-AFDF-61D4935F36B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2103A9F-616A-4691-AFDF-61D4935F36B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74B7B1E2-D1B9-4966-8795-AB83CF63875D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74B7B1E2-D1B9-4966-8795-AB83CF63875D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74B7B1E2-D1B9-4966-8795-AB83CF63875D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74B7B1E2-D1B9-4966-8795-AB83CF63875D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D10530DE-14DD-4EAD-8EF1-D80B50899CC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D10530DE-14DD-4EAD-8EF1-D80B50899CC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D10530DE-14DD-4EAD-8EF1-D80B50899CC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D10530DE-14DD-4EAD-8EF1-D80B50899CC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {480B0F31-2AA5-47AA-86CF-3E420A5A2EE1}
+		SolutionGuid = {004B2FDB-44F5-4379-BA69-0136B87981EE}
 	EndGlobalSection
 EndGlobal

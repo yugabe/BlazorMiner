@@ -10,7 +10,7 @@ The goal of this project is to get an "in-depth, deep-dive overview" of the abov
 
 Please, <b>don't forget to Star</b> this repository if you enjoyed its contents or themes; it's free to do so!
 
-The completed project can be played at <b><a href="https://blazorminer.azurewebsites.net" target="_blank">https://blazorminer.azurewebsites.net</a></b> (as credit allows). The app doesn't need e-mail verification, so feel free to use dummy accounts. Don't forget to click the confirmation link after creating your user, though.
+~~The completed project can be played at <b><a href="https://blazorminer.azurewebsites.net" target="_blank">https://blazorminer.azurewebsites.net</a></b> (as credit allows). The app doesn't need e-mail verification, so feel free to use dummy accounts. Don't forget to click the confirmation link after creating your user, though.~~ Credit expired :'( You can host your own server too though!
 
 This is a step-by-step tutorial to complete this project. The repository contains the completed project, but the tutorial will cover creating the project from scratch to the completed version.
 
